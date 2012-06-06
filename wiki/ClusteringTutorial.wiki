@@ -1,0 +1,128 @@
+#summary Simple example demonstrating how to use the PRIDE Spectra Clustering API.
+#labels Featured
+
+= Tutorial =
+
+The code used in this example is available in the SVN:
+{{{
+svn checkout http://pride-spectra-clustering.googlecode.com/svn/pride-spectra-clustering-example/trunk/ pride-spectra-clustering-example
+}}}
+
+This example assumes that you are familiar with the Java programming language and [http://maven.apache.org/ Apache Maven].
+
+== Set up your project ==
+
+First, create a standard maven project. 
+
+To include the PRIDE Spectra Clustering API in your maven project simply add the following dependency to your project's POM file:
+{{{
+<dependency>
+  <groupId>uk.ac.ebi.pride.tools</groupId>
+  <artifactId>pride-spectra-clustering</artifactId>
+  <version>1.0</version>
+</dependency>
+}}}
+
+This dependency is available in the EBI's maven repository:
+{{{
+<repository>
+  <id>ebi-repo</id>
+  <name>The EBI internal repository</name>
+  <url>http://www.ebi.ac.uk/~maven/m2repo</url>
+  <releases>
+    <enabled>true</enabled>
+  </releases>
+  <snapshots>
+    <enabled>false</enabled>
+  </snapshots>
+</repository>
+}}}
+
+== Load spectra ==
+
+In this example we will use the [http://jmzreader.googlecode.com jmzReader] API to read spectra form an MGF file. For more information on how to use jmzReader please refer to the jmzReader project page at http://jmzreader.googlecode.com.
+
+To load spectra from the supplied MGF file, we simply open the file using the _MgfFile_ class from the jmzReader's mgf-parser:
+{{{
+URL spectraFile = App.class.getClassLoader().getResource("spectra.mgf");
+MgfFile mgfFile = new MgfFile(new File(spectraFile.toURI()));
+
+// load all spectra into memory
+List<ClusteringSpectrum> spectra = loadSpectraFromFile(mgfFile);
+}}}
+
+The _Spectrum_ interface used in the jmzReader API is also used by the PRIDE Spectra Clustering API. In this example we change the spectra object's slightly and replace the spectra's original ids with their MGF title. Therefore, we know which spectrum was identified as which peptide (as this is encoded in the MGF file's titles - this is normally not the case in MGF files but only used for this example):
+
+{{{
+private static List<ClusteringSpectrum> loadSpectraFromFile(MgfFile mgfFile) throws Exception {
+  List<ClusteringSpectrum> spectra = new ArrayList<ClusteringSpectrum>(mgfFile.getMs2QueryCount());
+  
+  Iterator<Ms2Query> it = mgfFile.getMs2QueryIterator();
+  Set<String> processedIds = new HashSet<String>();
+  
+  while(it.hasNext()) {
+   Ms2Query query = it.next();
+   
+   // make sure every spectrum is only used once
+   if (processedIds.contains(query.getTitle()))
+    continue;
+   
+   processedIds.add(query.getTitle());
+   
+   // set the intensity to 1 in case it's missing
+   if (query.getPeptideIntensity() == null)
+    query.setPeptideIntensity(1.0);
+   
+   // throw an exception in case it's missing
+   if (query.getPrecursorCharge() == null) {
+    throw new Exception("Spectrum is missing precursor charge.");
+   }
+   
+   // change the id to title
+   ClusteringSpectrum spectrum = new ClusteringSpectrum(
+     query.getTitle(), // the spectrum's title is used as its id
+     query.getPrecursorMZ(), 
+     query.getPrecursorIntensity(), 
+     query.getPrecursorCharge(), 
+     query.getPeakList(), 
+     null, 
+     query.getMsLevel());
+   
+   spectra.add(spectrum);
+  }
+  
+  return spectra;
+ }
+}}}
+
+== Cluster Spectra ==
+
+To cluster the spectra simply create a class implementing the _SpectraClustering_ interface:
+{{{
+// Initialize the clustering
+SpectraClustering clustering = new FrankEtAlClustering(); // this is an adapted implementation of the algorithm presented by Frank et al. in 2011
+
+// set the variables required for the clustering process
+// the settings used here are the same ones as the ones
+// used to cluster the PRIDE database
+clustering.setClusteringRounds(4);
+clustering.setSimilarityThreshold(0.7);
+}}}
+
+To cluster a list of spectra simply call the _SpectraClustering_ object's _clusterSpectra_ method:
+{{{
+List<SpectraCluster> createdCluster = clustering.clusterConvertedSpectra(spectra);
+}}}
+
+The spectra assigned to a given cluster are available through the _SpectraCluster_'s _getSpectra_ function:
+{{{
+for (SpectraCluster cluster : createdCluster) {
+  // the average precursor m/z of all spectra within the cluster
+  cluster.getAverageMz();
+
+  // the list of spectra added to the cluster
+  for (ClusteringSpectrum spectrum : cluster.getSpectra()) {
+    // ClusteringSpectrum also implements jmzReader's spectrum interface
+  }
+}
+}}}
