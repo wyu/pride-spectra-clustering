@@ -5,7 +5,7 @@
 
 The code used in this example is available in the SVN:
 {{{
-svn checkout http://pride-spectra-clustering.googlecode.com/svn/pride-spectra-clustering-example/trunk/ pride-spectra-clustering-example
+svn checkout http://pride-spectra-clustering.googlecode.com/svn/pride-spectra-cluster-example/trunk/ pride-spectra-clustering-example
 }}}
 
 This example assumes that you are familiar with the Java programming language and [http://maven.apache.org/ Apache Maven].
