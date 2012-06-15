@@ -41,15 +41,15 @@ public class SpectraCluster {
 	/**
 	 * The average m/z of this cluster.
 	 */
-	protected double averageMz;
+	protected double averageMz = 0;
 	/**
 	 * The cluster's average charge.
 	 */
-	protected double averageCharge;
+	protected double averageCharge = 0;
 	/**
 	 * The total precursor intensity.
 	 */
-	protected double totalIntensity;
+	protected double totalIntensity = 0;
 	/**
 	 * Additional information about the cluster
 	 */
@@ -148,9 +148,9 @@ public class SpectraCluster {
 		}
 		
 		// update the cluster's charge, weighted m/z, and intensity
-		this.totalIntensity += totalIntensity;
 		this.averageCharge = ((this.averageCharge * addedSpectra.size()) + (totalCharge)) / (addedSpectra.size() + spectra.size());
 		this.averageMz = ((weightedMz * totalIntensity) + (this.averageMz * this.totalIntensity)) / (totalIntensity + this.totalIntensity);
+		this.totalIntensity += totalIntensity;
 		
 		// add the spectra
 		addedSpectra.addAll(spectra);
