@@ -19,7 +19,7 @@ To include the PRIDE Spectra Clustering API in your maven project simply add the
 <dependency>
   <groupId>uk.ac.ebi.pride.tools</groupId>
   <artifactId>pride-spectra-clustering</artifactId>
-  <version>1.0</version>
+  <version>1.1</version>
 </dependency>
 }}}
 
