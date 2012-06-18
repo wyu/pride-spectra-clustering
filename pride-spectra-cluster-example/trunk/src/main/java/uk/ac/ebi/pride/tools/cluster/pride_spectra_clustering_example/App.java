@@ -1,7 +1,6 @@
 package uk.ac.ebi.pride.tools.cluster.pride_spectra_clustering_example;
 
 import java.io.File;
-import java.net.URL;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
@@ -37,15 +36,24 @@ public class App
         System.out.println("+-------------------------------------+\n");
         
         try {
+        	// use the first argument as filename
+        	if (args.length < 1) {
+        		System.out.println("Usage: java -jar pride-spectra-clustering-example-1.0-SNAPSHOT.jar [MGF file]");
+        		System.exit(1);
+        		return;
+        	}
+        	
+        	String filename = args[0];
+        	
         	DecimalFormatSymbols decimalSymbols = new DecimalFormatSymbols(Locale.US);
         	DecimalFormat decimalFormat = new DecimalFormat("#.##", decimalSymbols);
         	
         	// load the spectra from the MGF file
         	System.out.print("Loading MGF file...");
-        	URL spectraFile = App.class.getClassLoader().getResource("spectra.mgf");
         	
         	// WARNING: this does not work if everything is packed
-        	MgfFile mgfFile = new MgfFile(new File(spectraFile.toURI()));
+        	//MgfFile mgfFile = new MgfFile(new File(spectraFile.toURI()));
+        	MgfFile mgfFile = new MgfFile(new File(filename));
         	// load all spectra into memory
         	List<ClusteringSpectrum> spectra = loadSpectraFromFile(mgfFile);
         	
