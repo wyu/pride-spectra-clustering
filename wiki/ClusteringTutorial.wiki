@@ -44,8 +44,8 @@ In this example we will use the [http://jmzreader.googlecode.com jmzReader] API 
 
 To load spectra from the supplied MGF file, we simply open the file using the _MgfFile_ class from the jmzReader's mgf-parser:
 {{{
-URL spectraFile = App.class.getClassLoader().getResource("spectra.mgf");
-MgfFile mgfFile = new MgfFile(new File(spectraFile.toURI()));
+String filename = args[0]; // The file "spectra.mgf" is supplied with the example
+MgfFile mgfFile = new MgfFile(new File(filename));
 
 // load all spectra into memory
 List<ClusteringSpectrum> spectra = loadSpectraFromFile(mgfFile);
