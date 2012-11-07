@@ -67,19 +67,19 @@ public class FrankEtAlClusteringTest extends TestCase {
 		
 		System.out.println("Clustering done in " + (stop - start) + " msec");
 		
-		assertEquals(141, generatedCluster.size());
+		assertEquals(142, generatedCluster.size());
 		
 		for (int i = 0; i < 3; i++) {
 			SpectraCluster cluster = generatedCluster.get(i);
 			
 			if (i == 0) {
-				assertEquals(403.780015, cluster.getAverageMz());
-				assertEquals(2, cluster.getClusterSize());
-				
+				assertEquals(402.01793764705883, cluster.getAverageMz());
+                assertEquals(8, cluster.getClusterSize());
+                //System.out.println("Here1");
 				boolean peakFound = false;
 				for (Peak p : cluster.getConsensusSpectrum()) {
-					if (p.getMz() == 717.40576) {
-						assertEquals(0.3413016078359391, p.getIntensity());
+					if (p.getMz() == 764.5533508019715) {
+						assertEquals(0.013422155963675658, p.getIntensity());
 						peakFound = true;
 					}
 				}
@@ -107,13 +107,13 @@ public class FrankEtAlClusteringTest extends TestCase {
 			SpectraCluster cluster = generatedCluster.get(i);
 			
 			if (i == 5) {
-				assertEquals(403.31666333333334, cluster.getAverageMz());
-				assertEquals(3, cluster.getClusterSize());
+				assertEquals(401.67999, cluster.getAverageMz());
+				assertEquals(1, cluster.getClusterSize());
 				
 				boolean peakFound = false;
 				for (Peak p : cluster.getConsensusSpectrum()) {
-					if (p.getMz() == 701.4931028342245) {
-						assertEquals(0.24180072728087787, p.getIntensity());
+					if (p.getMz() == 233.92139) {
+						assertEquals(0.096907934822912, p.getIntensity());
 						peakFound = true;
 					}
 				}
